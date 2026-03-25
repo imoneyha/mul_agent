@@ -1,0 +1,82 @@
+{
+  "name": "mul-agent",
+  "port": 8080,
+  "model": "npi/gpt-5.3-codex",
+  
+  "agents": {
+    "list": [
+      {
+        "id": "assistant",
+        "name": "智能助手",
+        "default": true,
+        "workspace": "~/mul-agent/assistant/workspace",
+        "agentDir": "~/mul-agent/assistant/agent",
+        "model": "npi/gpt-5.3-codex"
+      },
+      {
+        "id": "security",
+        "name": "安防救援",
+        "workspace": "~/mul-agent/security/workspace",
+        "agentDir": "~/mul-agent/security/agent",
+        "model": "npi/gpt-5.3-codex"
+      },
+      {
+        "id": "creative",
+        "name": "内容文创",
+        "workspace": "~/mul-agent/creative/workspace",
+        "agentDir": "~/mul-agent/creative/agent",
+        "model": "npi/gpt-5.3-codex"
+      },
+      {
+        "id": "devops",
+        "name": "系统研发",
+        "workspace": "~/mul-agent/devops/workspace",
+        "agentDir": "~/mul-agent/devops/agent",
+        "model": "npi/gpt-5.3-codex"
+      }
+    ]
+  },
+  
+  "bindings": [
+    {
+      "agentId": "security",
+      "match": {
+        "channel": "openclaw-weixin",
+        "message": ".*安全.*|.*救援.*|.*安防.*|.*报警.*"
+      }
+    },
+    {
+      "agentId": "creative",
+      "match": {
+        "channel": "openclaw-weixin",
+        "message": ".*写作.*|.*小说.*|.*文案.*|.*创意.*|.*文创.*|.*故事.*"
+      }
+    },
+    {
+      "agentId": "devops",
+      "match": {
+        "channel": "openclaw-weixin",
+        "message": ".*开发.*|.*代码.*|.*系统.*|.*运维.*|.*部署.*"
+      }
+    },
+    {
+      "agentId": "assistant",
+      "match": {
+        "channel": "openclaw-weixin"
+      }
+    }
+  ],
+  
+  "tools": {
+    "agentToAgent": {
+      "enabled": true,
+      "allow": ["assistant", "security", "creative", "devops"]
+    }
+  },
+  
+  "channels": {
+    "openclaw-weixin": {
+      "enabled": true
+    }
+  }
+}
