@@ -6,12 +6,12 @@
 
 ## 实例规划
 
-| 实例 | 端口 | State目录 | 配置路径 | 作用 |
-|------|------|-----------|----------|------|
-| assistant | 8080 | ~/.openclaw/assistant | ~/.openclaw/assistant/config.json | 智能助手（微信入口） |
-| security | 8081 | ~/.openclaw/security | ~/.openclaw/security/config.json | 安防救援 |
-| creative | 8082 | ~/.openclaw/creative | ~/.openclaw/creative/config.json | 内容文创 |
-| devops | 8083 | ~/.openclaw/devops | ~/.openclaw/devops/config.json | 系统研发 |
+| 实例 | 端口 | 根目录 | 配置路径 | 作用 |
+|------|------|---------|----------|------|
+| assistant | 8080 | ~/mul-agent/assistant | ~/mul-agent/assistant/config.json | 智能助手（微信入口） |
+| security | 8081 | ~/mul-agent/security | ~/mul-agent/security/config.json | 安防救援 |
+| creative | 8082 | ~/mul-agent/creative | ~/mul-agent/creative/config.json | 内容文创 |
+| devops | 8083 | ~/mul-agent/devops | ~/mul-agent/devops/config.json | 系统研发 |
 
 ## 实例详情
 
@@ -53,14 +53,14 @@
 
 ```bash
 # Assistant实例（微信入口）
-OPENCLAWSTATEDIR=~/.openclaw/assistant openclaw --config ~/.openclaw/assistant/config.json
+OPENCLAWSTATEDIR=~/mul-agent/assistant openclaw --config ~/mul-agent/assistant/config.json
 
 # Security实例（安防救援）
-OPENCLAWSTATEDIR=~/.openclaw/security openclaw --config ~/.openclaw/security/config.json --port 8081
+OPENCLAWSTATEDIR=~/mul-agent/security openclaw --config ~/mul-agent/security/config.json --port 8081
 
 # Creative实例（内容文创）
-OPENCLAWSTATEDIR=~/.openclaw/creative openclaw --config ~/.openclaw/creative/config.json --port 8082
+OPENCLAWSTATEDIR=~/mul-agent/creative openclaw --config ~/mul-agent/creative/config.json --port 8082
 
 # DevOps实例（系统研发）
-OPENCLAWSTATEDIR=~/.openclaw/devops openclaw --config ~/.openclaw/devops/config.json --port 8083
+OPENCLAWSTATEDIR=~/mul-agent/devops openclaw --config ~/mul-agent/devops/config.json --port 8083
 ```

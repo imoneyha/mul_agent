@@ -19,12 +19,12 @@
 
 ## 实例架构总览
 
-| 实例 | 端口 | State目录 | 作用 | 工作目录 |
-|------|------|-----------|------|----------|
-| **assistant** | 8080 | `~/.openclaw/assistant` | 智能助手（微信入口） | - |
-| **security** | 8081 | `~/.openclaw/security` | 安防救援 | - |
-| **creative** | 8082 | `~/.openclaw/creative` | 内容文创 | `~/novels` |
-| **devops** | 8083 | `~/.openclaw/devops` | 系统研发 | `~/project` |
+| 实例 | 端口 | 根目录 | 作用 | 工作目录 |
+|------|------|---------|------|----------|
+| **assistant** | 8080 | `~/mul-agent/assistant` | 智能助手（微信入口） | - |
+| **security** | 8081 | `~/mul-agent/security` | 安防救援 | - |
+| **creative** | 8082 | `~/mul-agent/creative` | 内容文创 | `~/novels` |
+| **devops** | 8083 | `~/mul-agent/devops` | 系统研发 | `~/project` |
 
 ---
 
@@ -111,16 +111,16 @@ cd ~/project/mul_agent
 
 ```bash
 # 终端 1 - 智能助手（微信入口）
-OPENCLAWSTATEDIR=~/.openclaw/assistant openclaw --config ~/.openclaw/assistant/config.json
+OPENCLAWSTATEDIR=~/mul-agent/assistant openclaw --config ~/mul-agent/assistant/config.json
 
 # 终端 2 - 安防救援
-OPENCLAWSTATEDIR=~/.openclaw/security openclaw --config ~/.openclaw/security/config.json
+OPENCLAWSTATEDIR=~/mul-agent/security openclaw --config ~/mul-agent/security/config.json
 
 # 终端 3 - 内容文创
-OPENCLAWSTATEDIR=~/.openclaw/creative openclaw --config ~/.openclaw/creative/config.json
+OPENCLAWSTATEDIR=~/mul-agent/creative openclaw --config ~/mul-agent/creative/config.json
 
 # 终端 4 - 系统研发
-OPENCLAWSTATEDIR=~/.openclaw/devops openclaw --config ~/.openclaw/devops/config.json
+OPENCLAWSTATEDIR=~/mul-agent/devops openclaw --config ~/mul-agent/devops/config.json
 ```
 
 ---
