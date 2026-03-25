@@ -1,6 +1,6 @@
 {
-  "name": "mul-agent-ops",
-  "port": 8082,
+  "name": "mul-agent-security",
+  "port": 8081,
   "model": "npi/gpt-5.3-codex",
   
   "channels": {
@@ -11,16 +11,25 @@
   },
   
   "agents": {
-    "monitor": {
+    "rescue": {
       "model": "npi/gpt-5.3-codex",
       "tools": ["read", "exec", "web_search"],
+      "permissions": {
+        "external": true,
+        "code": true,
+        "shell": true
+      }
+    },
+    "monitor": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec"],
       "permissions": {
         "external": false,
         "code": true,
         "shell": true
       }
     },
-    "sec-audit": {
+    "audit": {
       "model": "npi/gpt-5.3-codex",
       "tools": ["read", "exec"],
       "permissions": {
@@ -33,11 +42,15 @@
   
   "bindings": {
     "api": {
-      "default": "monitor",
+      "default": "rescue",
       "rules": [
         {
-          "match": ".*安全.*|.*审计.*|.*扫描.*",
-          "agent": "sec-audit"
+          "match": ".*监控.*|.*状态.*|.*巡检.*",
+          "agent": "monitor"
+        },
+        {
+          "match": ".*审计.*|.*扫描.*|.*检查.*",
+          "agent": "audit"
         }
       ]
     }

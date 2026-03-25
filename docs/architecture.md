@@ -2,32 +2,65 @@
 
 ## 概述
 
-企业级OpenClaw部署架构：3实例强隔离 + 每实例多Agent细分工。
+企业级OpenClaw部署架构：4实例强隔离 + 每实例多Agent细分工。
 
 ## 实例规划
 
 | 实例 | 端口 | State目录 | 配置路径 | 作用 |
 |------|------|-----------|----------|------|
-| entry | 8080 | ~/.openclaw/entry | ~/.openclaw/entry/config.json | 微信入口、路由、轻量回复 |
-| work | 8081 | ~/.openclaw/work | ~/.openclaw/work/config.json | 研发、文档、数据处理 |
-| ops | 8082 | ~/.openclaw/ops | ~/.openclaw/ops/config.json | 巡检、告警、安全审计 |
+| assistant | 8080 | ~/.openclaw/assistant | ~/.openclaw/assistant/config.json | 智能助手（微信入口） |
+| security | 8081 | ~/.openclaw/security | ~/.openclaw/security/config.json | 安防救援 |
+| creative | 8082 | ~/.openclaw/creative | ~/.openclaw/creative/config.json | 内容文创 |
+| devops | 8083 | ~/.openclaw/devops | ~/.openclaw/devops/config.json | 系统研发 |
+
+## 实例详情
+
+### assistant（智能助手）
+- **作用**：微信接入、路由、日常对话
+- **Agents**：
+  - `router` - 任务分流
+  - `chat` - 前台问答（默认）
+
+### security（安防救援）
+- **作用**：安全监控、应急响应、审计
+- **Agents**：
+  - `rescue` - 救援响应（默认）
+  - `monitor` - 安全监控
+  - `audit` - 安全审计
+
+### creative（内容文创）
+- **作用**：小说创作、文案写作、内容策划
+- **Agents**：
+  - `novelist` - 小说创作（默认）
+  - `copywriter` - 文案写作
+  - `planner` - 大纲/世界观设定
+
+### devops（系统研发）
+- **作用**：代码开发、系统运维、测试
+- **Agents**：
+  - `developer` - 代码开发（默认）
+  - `operator` - 系统运维
+  - `qa` - 测试验证
 
 ## 关键原则
 
-1. **微信号仅在entry实例登录** - 避免会话冲突
-2. **work/ops不直连微信** - 所有外发由entry统一处理
-3. **实例间API通信** - entry分发任务、收集结果
+1. **微信号仅在assistant实例登录** - 避免会话冲突
+2. **security/creative/devops不直连微信** - 所有外发由assistant统一处理
+3. **实例间API通信** - assistant分发任务、收集结果
 4. **每实例独立** - 独立的STATE、CONFIG、端口、systemd服务
 
 ## 启动方式
 
 ```bash
-# Entry实例（微信入口）
-OPENCLAWSTATEDIR=~/.openclaw/entry openclaw --config ~/.openclaw/entry/config.json
+# Assistant实例（微信入口）
+OPENCLAWSTATEDIR=~/.openclaw/assistant openclaw --config ~/.openclaw/assistant/config.json
 
-# Work实例（业务执行）
-OPENCLAWSTATEDIR=~/.openclaw/work openclaw --config ~/.openclaw/work/config.json --port 8081
+# Security实例（安防救援）
+OPENCLAWSTATEDIR=~/.openclaw/security openclaw --config ~/.openclaw/security/config.json --port 8081
 
-# Ops实例（运维监控）
-OPENCLAWSTATEDIR=~/.openclaw/ops openclaw --config ~/.openclaw/ops/config.json --port 8082
+# Creative实例（内容文创）
+OPENCLAWSTATEDIR=~/.openclaw/creative openclaw --config ~/.openclaw/creative/config.json --port 8082
+
+# DevOps实例（系统研发）
+OPENCLAWSTATEDIR=~/.openclaw/devops openclaw --config ~/.openclaw/devops/config.json --port 8083
 ```

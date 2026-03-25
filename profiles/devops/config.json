@@ -1,6 +1,6 @@
 {
-  "name": "mul-agent-work",
-  "port": 8081,
+  "name": "mul-agent-devops",
+  "port": 8083,
   "model": "npi/gpt-5.3-codex",
   
   "channels": {
@@ -11,7 +11,7 @@
   },
   
   "agents": {
-    "dev": {
+    "developer": {
       "model": "npi/gpt-5.3-codex",
       "tools": ["read", "write", "edit", "exec", "web_search"],
       "permissions": {
@@ -21,14 +21,14 @@
       },
       "workdir": "~/project"
     },
-    "doc": {
+    "operator": {
       "model": "npi/gpt-5.3-codex",
-      "tools": ["read", "write", "edit", "web_search"],
+      "tools": ["read", "exec"],
       "permissions": {
         "external": false,
-        "code": false
-      },
-      "workdir": "~/project"
+        "code": true,
+        "shell": true
+      }
     },
     "qa": {
       "model": "npi/gpt-5.3-codex",
@@ -42,14 +42,14 @@
   
   "bindings": {
     "api": {
-      "default": "dev",
+      "default": "developer",
       "rules": [
         {
-          "match": ".*文档.*|.*写.*|.*总结.*",
-          "agent": "doc"
+          "match": ".*部署.*|.*运维.*|.*启动.*|.*停止.*",
+          "agent": "operator"
         },
         {
-          "match": ".*测试.*|.*检查.*|.*验证.*",
+          "match": ".*测试.*|.*验证.*|.*检查.*",
           "agent": "qa"
         }
       ]
