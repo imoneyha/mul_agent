@@ -1,0 +1,104 @@
+{
+  "name": "mul-agent-single",
+  "port": 8080,
+  "model": "npi/gpt-5.3-codex",
+  
+  "channels": {
+    "wechat": {
+      "enabled": true,
+      "type": "openclaw-weixin"
+    }
+  },
+  
+  "agents": {
+    "triage": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["memory_search"],
+      "permissions": {
+        "external": false,
+        "code": false
+      }
+    },
+    "reception": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["memory_search", "web_search"],
+      "permissions": {
+        "external": true,
+        "code": false
+      }
+    },
+    "dev": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "write", "edit", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      },
+      "workdir": "~/project"
+    },
+    "doc": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "write", "edit", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": false
+      },
+      "workdir": "~/project"
+    },
+    "qa": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true
+      }
+    },
+    "monitor": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      }
+    },
+    "sec-audit": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      }
+    }
+  },
+  
+  "bindings": {
+    "wechat": {
+      "default": "reception",
+      "rules": [
+        {
+          "match": ".*开发.*|.*写代码.*|.*编程.*",
+          "agent": "dev"
+        },
+        {
+          "match": ".*文档.*|.*写.*|.*总结.*|.*整理.*",
+          "agent": "doc"
+        },
+        {
+          "match": ".*测试.*|.*检查.*|.*验证.*",
+          "agent": "qa"
+        },
+        {
+          "match": ".*监控.*|.*状态.*|.*运行.*",
+          "agent": "monitor"
+        },
+        {
+          "match": ".*安全.*|.*审计.*|.*扫描.*",
+          "agent": "sec-audit"
+        }
+      ]
+    }
+  }
+}

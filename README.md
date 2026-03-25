@@ -12,9 +12,16 @@
 
 ## 快速部署
 
+### 单实例模式（推荐，简单）
 ```bash
 cd ~/project/mul_agent
-./scripts/deploy.sh
+./scripts/deploy.sh single
+```
+
+### 多实例模式（企业级，强隔离）
+```bash
+cd ~/project/mul_agent
+./scripts/deploy.sh multi
 ```
 
 ## 项目结构
