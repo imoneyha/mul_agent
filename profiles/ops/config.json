@@ -1,0 +1,47 @@
+{
+  "name": "mul-agent-ops",
+  "port": 8082,
+  "model": "npi/gpt-5.3-codex",
+  
+  "channels": {
+    "api": {
+      "enabled": true,
+      "type": "http"
+    }
+  },
+  
+  "agents": {
+    "monitor": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      }
+    },
+    "sec-audit": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      }
+    }
+  },
+  
+  "bindings": {
+    "api": {
+      "default": "monitor",
+      "rules": [
+        {
+          "match": ".*安全.*|.*审计.*|.*扫描.*",
+          "agent": "sec-audit"
+        }
+      ]
+    }
+  },
+  
+  "report_to": "http://localhost:8080"
+}

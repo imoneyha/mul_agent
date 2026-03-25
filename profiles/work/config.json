@@ -1,0 +1,60 @@
+{
+  "name": "mul-agent-work",
+  "port": 8081,
+  "model": "npi/gpt-5.3-codex",
+  
+  "channels": {
+    "api": {
+      "enabled": true,
+      "type": "http"
+    }
+  },
+  
+  "agents": {
+    "dev": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "write", "edit", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true,
+        "shell": true
+      },
+      "workdir": "~/project"
+    },
+    "doc": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "write", "edit", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": false
+      },
+      "workdir": "~/project"
+    },
+    "qa": {
+      "model": "npi/gpt-5.3-codex",
+      "tools": ["read", "exec", "web_search"],
+      "permissions": {
+        "external": false,
+        "code": true
+      }
+    }
+  },
+  
+  "bindings": {
+    "api": {
+      "default": "dev",
+      "rules": [
+        {
+          "match": ".*文档.*|.*写.*|.*总结.*",
+          "agent": "doc"
+        },
+        {
+          "match": ".*测试.*|.*检查.*|.*验证.*",
+          "agent": "qa"
+        }
+      ]
+    }
+  },
+  
+  "report_to": "http://localhost:8080"
+}
