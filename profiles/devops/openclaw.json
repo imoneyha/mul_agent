@@ -28,8 +28,7 @@
         "fallbacks": [
           "npi/doubao-seed-2.0-code"
         ]
-      },
-      "workspace": "~/mul-agent/devops/workspace"
+      }
     }
   },
   "tools": {
