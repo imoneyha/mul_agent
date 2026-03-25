@@ -40,27 +40,9 @@
       }
     }
   },
-  "channels": {
-    "openclaw-weixin": {
-      "enabled": true
-    }
-  },
   "gateway": {
     "port": 18780,
     "mode": "local",
     "bind": "loopback"
-  },
-  "plugins": {
-    "slots": {
-      "memory": "openclaw-mem0"
-    },
-    "entries": {
-      "openclaw-weixin": {
-        "enabled": true
-      },
-      "openclaw-mem0": {
-        "enabled": true
-      }
-    }
   }
 }

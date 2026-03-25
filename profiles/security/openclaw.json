@@ -40,20 +40,9 @@
       }
     }
   },
-  "channels": {},
   "gateway": {
     "port": 18800,
     "mode": "local",
     "bind": "loopback"
-  },
-  "plugins": {
-    "slots": {
-      "memory": "openclaw-mem0"
-    },
-    "entries": {
-      "openclaw-mem0": {
-        "enabled": true
-      }
-    }
   }
 }

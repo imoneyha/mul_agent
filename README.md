@@ -1,231 +1,153 @@
 # mul_agent
 
-企业级4实例多智能体协作系统（完全符合OpenClaw官方文档）
+企业级 4 实例多智能体协作系统（按 OpenClaw 官方文档校验通过）
+
+## 当前状态（已实测）
+
+- ✅ `scripts/deploy.sh` 可成功执行
+- ✅ 4 个 profile 配置可通过 `openclaw config validate`
+- ✅ 工作区文件结构符合官方 `agent workspace` 规范（SOUL/AGENTS/USER/IDENTITY/TOOLS/HEARTBEAT/memory）
+- ✅ 启动命令使用官方推荐：`openclaw --profile <name> gateway run`
+
+> 说明：为确保“开箱即校验通过”，当前模板使用**最小可用配置**（不强依赖外部插件）。
 
 ---
 
-## 项目简介
+## 架构与端口规划（间隔 20+）
 
-基于 OpenClaw 官方 `--profile` 功能构建的企业级多智能体协作平台，采用 **4独立Gateway进程 + 自动隔离 + 端口间隔20+** 架构。
-
-### 核心设计理念
-
-- **完全官方方式**：使用 `--profile <name>` 自动隔离，完全符合官方文档
-- **强隔离**：4独立OpenClaw Gateway进程，完全隔离
-- **端口间隔**：基于默认18789端口，每个实例间隔20+
-- **安全优先**：微信号仅在入口实例登录
-- **完整工作区**：每个profile有完整的工作区文件（SOUL.md/AGENTS.md/USER.md等）
+| Profile | Gateway端口 | 配置目录 | 工作区目录 | 角色 |
+|---|---:|---|---|---|
+| assistant | 18780 | `~/.openclaw-assistant/` | `~/.openclaw/workspace-assistant` | 智能助手（入口） |
+| security | 18800 | `~/.openclaw-security/` | `~/.openclaw/workspace-security` | 安防救援 |
+| creative | 18820 | `~/.openclaw-creative/` | `~/.openclaw/workspace-creative` | 内容文创 |
+| devops | 18840 | `~/.openclaw-devops/` | `~/.openclaw/workspace-devops` | 系统研发 |
 
 ---
 
-## 实例架构总览
-
-| Profile | Gateway端口 | 配置目录 | 工作区目录 | 作用 |
-|---------|------------|---------|-----------|------|
-| **assistant** | 18780 | `~/.openclaw-assistant/` | `~/.openclaw/workspace-assistant` | 智能助手（微信入口） |
-| **security** | 18800 | `~/.openclaw-security/` | `~/.openclaw/workspace-security` | 安防救援 |
-| **creative** | 18820 | `~/.openclaw-creative/` | `~/.openclaw/workspace-creative` | 内容文创 |
-| **devops** | 18840 | `~/.openclaw-devops/` | `~/.openclaw/workspace-devops` | 系统研发 |
-
----
-
-## 各实例详细说明
-
-### 1. assistant（智能助手）- Gateway端口 18780
-
-**作用**：微信接入、日常对话
-
-**特点**：
-- 唯一开启 `openclaw-weixin` channel的实例
-- 配置目录：`~/.openclaw-assistant/`
-- 工作区目录：`~/.openclaw/workspace-assistant`
-- Gateway端口：18780
-
----
-
-### 2. security（安防救援）- Gateway端口 18800
-
-**作用**：安全监控、应急响应、安全审计
-
-**特点**：
-- 无外部channel，仅API访问
-- 配置目录：`~/.openclaw-security/`
-- 工作区目录：`~/.openclaw/workspace-security`
-- Gateway端口：18800
-
----
-
-### 3. creative（内容文创）- Gateway端口 18820
-
-**作用**：小说创作、文案写作、内容策划
-
-**特点**：
-- 无外部channel，仅API访问
-- 配置目录：`~/.openclaw-creative/`
-- 工作区目录：`~/.openclaw/workspace-creative`
-- Gateway端口：18820
-
----
-
-### 4. devops（系统研发）- Gateway端口 18840
-
-**作用**：代码开发、系统运维、测试验证
-
-**特点**：
-- 无外部channel，仅API访问
-- 配置目录：`~/.openclaw-devops/`
-- 工作区目录：`~/.openclaw/workspace-devops`
-- Gateway端口：18840
-
----
-
-## 快速开始
-
-### 1. 部署
+## 一键部署
 
 ```bash
 cd ~/project/mul_agent
 ./scripts/deploy.sh
 ```
 
-### 2. 启动实例（需要4个终端）
+部署脚本会自动完成：
+
+1. 创建 `~/.openclaw-<profile>/openclaw.json`
+2. 创建 `~/.openclaw/workspace-<profile>/`
+3. 生成标准定义文件：
+   - `SOUL.md`
+   - `AGENTS.md`
+   - `USER.md`
+   - `IDENTITY.md`
+   - `TOOLS.md`
+   - `HEARTBEAT.md`
+   - `memory/`
+
+---
+
+## 启动命令（官方方式）
 
 ```bash
-# 终端 1 - 智能助手（Gateway端口 18780）
+# 终端 1
 openclaw --profile assistant gateway run
 
-# 终端 2 - 安防救援（Gateway端口 18800）
+# 终端 2
 openclaw --profile security gateway run
 
-# 终端 3 - 内容文创（Gateway端口 18820）
+# 终端 3
 openclaw --profile creative gateway run
 
-# 终端 4 - 系统研发（Gateway端口 18840）
+# 终端 4
 openclaw --profile devops gateway run
 ```
 
 ---
 
-## 目录结构（完全符合官方文档）
+## 配置校验（建议每次改完都跑）
 
+```bash
+openclaw --profile assistant config validate
+openclaw --profile security config validate
+openclaw --profile creative config validate
+openclaw --profile devops config validate
 ```
+
+预期输出：`Config valid: ...`
+
+---
+
+## 本轮官方文档对齐结果
+
+本轮按官方文档重新检阅后，已修正：
+
+1. **启动命令修正**
+   - 从不规范写法统一为：`openclaw --profile <name> gateway run`
+
+2. **配置路径修正**
+   - 使用 profile 默认隔离路径：`~/.openclaw-<profile>/openclaw.json`
+
+3. **工作区路径修正**
+   - 使用官方 profile 工作区：`~/.openclaw/workspace-<profile>`
+
+4. **插件依赖收敛**
+   - 去除会导致 `config validate` 失败的强绑定插件项（如未安装时的 channel/plugin 条目）
+   - 保证模板在“纯净环境”可直接通过校验
+
+---
+
+## 可选增强（需要时再开启）
+
+### 1) 给 assistant 启用微信入口
+
+先确保对应插件已在该 profile 可用，再在 `~/.openclaw-assistant/openclaw.json` 添加：
+
+```json
+{
+  "channels": {
+    "openclaw-weixin": {
+      "accounts": {}
+    }
+  },
+  "plugins": {
+    "entries": {
+      "openclaw-weixin": { "enabled": true }
+    }
+  }
+}
+```
+
+### 2) 启用 mem0 记忆插件
+
+在对应 profile 的配置中添加 `plugins.entries.openclaw-mem0`（并确保插件已安装可发现）。
+
+---
+
+## 项目结构
+
+```text
 mul_agent/
-├── profiles/                  # Profile配置模板
+├── profiles/
 │   ├── assistant/openclaw.json
 │   ├── security/openclaw.json
 │   ├── creative/openclaw.json
 │   └── devops/openclaw.json
-├── docs/                      # 文档目录
 ├── scripts/
-│   └── deploy.sh              # 一键部署脚本
-├── .gitignore
+│   └── deploy.sh
+├── docs/
 └── README.md
-
-(部署后生成，完全符合官方文档)
-~/.openclaw-assistant/
-├── openclaw.json              # 主配置文件
-
-~/.openclaw/workspace-assistant/
-├── SOUL.md                    # 身份、语气、边界
-├── AGENTS.md                  # 操作指南
-├── USER.md                    # 用户信息
-├── IDENTITY.md                # 身份定义
-├── TOOLS.md                   # 本地工具备注
-├── HEARTBEAT.md               # 心跳检查清单
-├── README.md                  # 工作区说明
-└── memory/                    # 每日记忆日志目录
-
-~/.openclaw-security/
-├── openclaw.json
-
-~/.openclaw/workspace-security/
-├── SOUL.md
-├── AGENTS.md
-├── USER.md
-├── IDENTITY.md
-├── TOOLS.md
-├── HEARTBEAT.md
-├── README.md
-└── memory/
-
-~/.openclaw-creative/
-├── openclaw.json
-
-~/.openclaw/workspace-creative/
-├── SOUL.md
-├── AGENTS.md
-├── USER.md
-├── IDENTITY.md
-├── TOOLS.md
-├── HEARTBEAT.md
-├── README.md
-└── memory/
-
-~/.openclaw-devops/
-├── openclaw.json
-
-~/.openclaw/workspace-devops/
-├── SOUL.md
-├── AGENTS.md
-├── USER.md
-├── IDENTITY.md
-├── TOOLS.md
-├── HEARTBEAT.md
-├── README.md
-└── memory/
 ```
 
 ---
 
-## 关键特性
+## Git 分支策略
 
-- ✅ **完全官方方式**：使用 `--profile` 自动隔离，完全符合官方文档
-- ✅ **强隔离**：4独立OpenClaw Gateway进程，互不干扰
-- ✅ **端口间隔**：基于默认18789，间隔20+（18780, 18800, 18820, 18840）
-- ✅ **完整工作区**：每个工作区预置完整文件（SOUL.md/AGENTS.md/USER.md/IDENTITY.md/TOOLS.md/HEARTBEAT.md/memory/）
-- ✅ **安全控制**：微信号仅在assistant实例登录
-- ✅ **官方文件结构**：完全按照官方文档创建工作区文件
+- 默认开发分支：`new`
+- `master`：无必要保持置空/初始状态
 
 ---
 
-## OpenClaw --profile 官方说明
+## 仓库
 
-使用 `--profile <name>` 时，OpenClaw会自动：
-- 设置 `OPENCLAW_STATE_DIR=~/.openclaw-<name>`
-- 查找配置文件：`~/.openclaw-<name>/openclaw.json`
-- 使用工作区：`~/.openclaw/workspace-<name>`（符合官方文档）
-
-启动命令：`openclaw --profile <name> gateway run`
-
----
-
-## 工作区文件说明（官方文档）
-
-每个工作区包含以下标准文件（按官方文档要求）：
-
-| 文件 | 说明 |
-|------|------|
-| `SOUL.md` | 身份、语气、边界 |
-| `AGENTS.md` | 操作指南、规则、优先级 |
-| `USER.md` | 用户信息、如何称呼 |
-| `IDENTITY.md` | 身份定义、名称、emoji |
-| `TOOLS.md` | 本地工具备注 |
-| `HEARTBEAT.md` | 心跳检查清单 |
-| `memory/YYYY-MM-DD.md` | 每日记忆日志 |
-| `MEMORY.md` | 长期记忆（可选） |
-
----
-
-## GitHub
-
-https://github.com/imoneyha/mul_agent
-
----
-
-## 后续步骤
-
-配置审核通过后，可进行：
-1. 实际启动各Gateway实例测试
-2. 根据需要调整各profile的配置
-3. 配置实例间通信机制
-4. 配置systemd服务实现开机自启
+- GitHub: https://github.com/imoneyha/mul_agent
+- 开发分支: `new`
