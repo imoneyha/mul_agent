@@ -1,0 +1,20 @@
+version: 1
+states:
+  - NEW
+  - CLASSIFIED
+  - PLANNED
+  - ACTIVE
+  - REVIEW
+  - APPROVED
+  - ARCHIVED
+  - FAILED
+transitions:
+  NEW: [CLASSIFIED, FAILED]
+  CLASSIFIED: [PLANNED, FAILED]
+  PLANNED: [ACTIVE, FAILED]
+  ACTIVE: [REVIEW, FAILED]
+  REVIEW: [APPROVED, ACTIVE, FAILED]
+  APPROVED: [ARCHIVED]
+retry:
+  max_retries: 1
+  on_review_fail: ACTIVE

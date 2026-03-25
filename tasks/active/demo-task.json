@@ -1,0 +1,10 @@
+{
+  "task_id": "demo-task",
+  "task_type": "coding",
+  "goal": "TODO: describe goal",
+  "constraints": [],
+  "inputs": {},
+  "outputs": {},
+  "state": "NEW",
+  "history": []
+}

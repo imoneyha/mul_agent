@@ -1,0 +1,11 @@
+{
+  "default_model": "napi/gpt-5.3-codex",
+  "thinking_default": "high",
+  "roles": {
+    "supervisor": "napi/gpt-5.3-codex",
+    "reviewer": "napi/gpt-5.3-codex",
+    "engineer": "napi/gpt-5.3-codex",
+    "podcast_producer": "napi/gpt-5.3-codex",
+    "comic_agent": "napi/gpt-5.3-codex"
+  }
+}
