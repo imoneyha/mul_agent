@@ -151,3 +151,22 @@ mul_agent/
 
 - GitHub: https://github.com/imoneyha/mul_agent
 - 开发分支: `new`
+---
+## 自动监测（已启用）
+已按你的要求启用自动巡检与自动执行下一轮：
+- 脚本：`scripts/auto_monitor.sh`
+- 定时安装脚本：`scripts/install_auto_monitor_cron.sh`
+- 当前计划任务：每 30 分钟执行一次
+```bash
+*/30 * cd /home/baiyun/project/mul_agent && ./scripts/auto_monitor.sh >> /home/baiyun/project/mul_agent/logs/cron.log 2>&1
+```
+### 自动巡检内容
+1. 执行 `./scripts/deploy.sh`
+2. 执行 4 个 profile 的 `openclaw --profile <name> config validate`
+3. 生成报告：`docs/AUTO_CHECK_REPORT.md`
+4. 有报告变更时自动 git 提交并推送
+### 手动触发一次
+```bash
+cd ~/project/mul_agent
+./scripts/auto_monitor.sh
+```
