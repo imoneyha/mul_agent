@@ -4,59 +4,15 @@
   "model": "npi/gpt-5.3-codex",
   
   "channels": {
-    "wechat": {
-      "enabled": true,
-      "type": "openclaw-weixin"
+    "openclaw-weixin": {
+      "enabled": true
     }
   },
   
   "agents": {
-    "router": {
-      "model": "npi/gpt-5.3-codex",
-      "tools": ["memory_search"],
-      "permissions": {
-        "external": false,
-        "code": false
-      }
-    },
     "chat": {
       "model": "npi/gpt-5.3-codex",
-      "tools": ["memory_search", "web_search"],
-      "permissions": {
-        "external": true,
-        "code": false
-      }
+      "tools": ["memory_search", "web_search"]
     }
-  },
-  
-  "bindings": {
-    "wechat": {
-      "default": "chat",
-      "rules": [
-        {
-          "match": ".*安全.*|.*救援.*|.*安防.*|.*报警.*",
-          "agent": "router",
-          "forward_to": "security:8081"
-        },
-        {
-          "match": ".*写作.*|.*小说.*|.*文案.*|.*创意.*|.*文创.*|.*故事.*",
-          "agent": "router",
-          "forward_to": "creative:8082"
-        },
-        {
-          "match": ".*开发.*|.*代码.*|.*系统.*|.*运维.*|.*部署.*",
-          "agent": "router",
-          "forward_to": "devops:8083"
-        }
-      ]
-    }
-  },
-  
-  "forwarding": {
-    "security": "http://localhost:8081",
-    "creative": "http://localhost:8082",
-    "devops": "http://localhost:8083",
-    "retry": 3,
-    "timeout": 30000
   }
 }

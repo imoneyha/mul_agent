@@ -1,41 +1,82 @@
 # mul_agent
 
-企业级多智能体协作系统（基于 OpenClaw 原生多Agent架构）
+企业级4实例多智能体协作系统（端口间隔20+）
 
 ---
 
 ## 项目简介
 
-基于 OpenClaw 原生多智能体路由功能构建的企业级协作平台，采用 **单Gateway进程 + 4隔离Agent** 架构。
+基于 OpenClaw 的企业级多智能体协作平台，采用 **4独立进程 + 端口间隔20+** 架构。
 
 ### 核心设计理念
 
-- **强隔离**：每个Agent有独立的 workspace + agentDir，完全隔离
-- **细分工**：4个专业Agent协同工作
-- **安全优先**：统一入口，通过 bindings 路由
-- **原生支持**：使用 OpenClaw 官方多Agent功能，无需自定义hack
+- **强隔离**：4独立OpenClaw进程，完全隔离
+- **端口间隔**：每个实例端口间隔至少20，避免冲突
+- **安全优先**：微信号仅在入口实例登录
+- **高可用**：支持降级策略和自动重试
 
 ---
 
-## Agent 架构总览
+## 实例架构总览
 
-| Agent ID | 名称 | 工作区目录 | 职责 |
-|----------|------|-----------|------|
-| **assistant** | 智能助手 | `~/mul-agent/assistant/workspace` | 日常对话、默认入口 |
-| **security** | 安防救援 | `~/mul-agent/security/workspace` | 安全监控、应急响应 |
-| **creative** | 内容文创 | `~/mul-agent/creative/workspace` | 小说创作、文案写作 |
-| **devops** | 系统研发 | `~/mul-agent/devops/workspace` | 代码开发、系统运维 |
+| 实例 | 端口 | 根目录 | 作用 | 工作目录 |
+|------|------|---------|------|----------|
+| **assistant** | 8080 | `~/mul-agent/assistant` | 智能助手（微信入口） | - |
+| **security** | 8100 | `~/mul-agent/security` | 安防救援 | - |
+| **creative** | 8120 | `~/mul-agent/creative` | 内容文创 | `~/novels` |
+| **devops** | 8140 | `~/mul-agent/devops` | 系统研发 | `~/project` |
 
 ---
 
-## 路由规则
+## 各实例详细说明
 
-| 关键词匹配 | 路由到 |
-|-----------|--------|
-| `.*安全.*\|.*救援.*\|.*安防.*\|.*报警.*` | security |
-| `.*写作.*\|.*小说.*\|.*文案.*\|.*创意.*\|.*文创.*\|.*故事.*` | creative |
-| `.*开发.*\|.*代码.*\|.*系统.*\|.*运维.*\|.*部署.*` | devops |
-| 默认（其他） | assistant |
+### 1. assistant（智能助手）- 端口 8080
+
+**作用**：微信接入、日常对话
+
+**Agents**：
+| Agent | 职责 | 工具权限 |
+|-------|------|----------|
+| `chat` | 前台日常问答 | memory_search, web_search |
+
+---
+
+### 2. security（安防救援）- 端口 8100
+
+**作用**：安全监控、应急响应、安全审计
+
+**Agents**：
+| Agent | 职责 | 工具权限 |
+|-------|------|----------|
+| `rescue` | 救援响应（默认） | read, exec, web_search |
+| `monitor` | 安全监控 | read, exec |
+| `audit` | 安全审计 | read, exec |
+
+---
+
+### 3. creative（内容文创）- 端口 8120
+
+**作用**：小说创作、文案写作、内容策划
+
+**Agents**：
+| Agent | 职责 | 工具权限 | 工作目录 |
+|-------|------|----------|----------|
+| `novelist` | 小说创作（默认） | read, write, edit, web_search | `~/novels` |
+| `copywriter` | 文案写作 | read, write, edit, web_search | - |
+| `planner` | 大纲/世界观设定 | read, write, edit | - |
+
+---
+
+### 4. devops（系统研发）- 端口 8140
+
+**作用**：代码开发、系统运维、测试验证
+
+**Agents**：
+| Agent | 职责 | 工具权限 | 工作目录 |
+|-------|------|----------|----------|
+| `developer` | 代码开发（默认） | read, write, edit, exec, web_search | `~/project` |
+| `operator` | 系统运维 | read, exec | - |
+| `qa` | 测试验证 | read, exec, web_search | - |
 
 ---
 
@@ -48,68 +89,56 @@ cd ~/project/mul_agent
 ./scripts/deploy.sh
 ```
 
-### 2. 启动
+### 2. 启动实例（需要4个终端）
 
 ```bash
-OPENCLAW_CONFIG_PATH=~/mul-agent/openclaw.json openclaw
-```
+# 终端 1 - 智能助手（端口 8080）
+OPENCLAWSTATEDIR=~/mul-agent/assistant openclaw --config ~/mul-agent/assistant/config.json
 
-### 3. 验证
+# 终端 2 - 安防救援（端口 8100）
+OPENCLAWSTATEDIR=~/mul-agent/security openclaw --config ~/mul-agent/security/config.json
 
-```bash
-openclaw agents list --bindings
+# 终端 3 - 内容文创（端口 8120）
+OPENCLAWSTATEDIR=~/mul-agent/creative openclaw --config ~/mul-agent/creative/config.json
+
+# 终端 4 - 系统研发（端口 8140）
+OPENCLAWSTATEDIR=~/mul-agent/devops openclaw --config ~/mul-agent/devops/config.json
 ```
 
 ---
 
-## 目录结构
+## 项目结构
 
 ```
 mul_agent/
-├── openclaw.json              # 主配置文件（OpenClaw原生格式）
+├── profiles/                  # 实例配置模板
+│   ├── assistant/config.json
+│   ├── security/config.json
+│   ├── creative/config.json
+│   └── devops/config.json
+├── docs/                      # 文档目录
 ├── scripts/
 │   └── deploy.sh              # 一键部署脚本
-├── docs/
-│   └── architecture.md        # 架构设计文档
-│
-└── (部署后生成)
+├── .gitignore
+└── README.md
+
+(部署后生成)
 ~/mul-agent/
-├── openclaw.json              # 运行时主配置
-├── assistant/
-│   ├── workspace/             # 智能助手工作区
-│   │   ├── SOUL.md
-│   │   ├── AGENTS.md
-│   │   └── README.md
-│   └── agent/                 # 智能助手状态目录
-├── security/
-│   ├── workspace/             # 安防救援工作区
-│   └── agent/                 # 安防救援状态目录
-├── creative/
-│   ├── workspace/             # 内容文创工作区
-│   └── agent/                 # 内容文创状态目录
-└── devops/
-    ├── workspace/             # 系统研发工作区
-    └── agent/                 # 系统研发状态目录
+├── assistant/config.json
+├── security/config.json
+├── creative/config.json
+└── devops/config.json
 ```
 
 ---
 
 ## 关键特性
 
-- ✅ **强隔离**：每个Agent有独立的 workspace 和 agentDir
-- ✅ **细分工**：4个专业Agent，基于关键词路由
-- ✅ **原生支持**：使用 OpenClaw 官方多Agent功能
-- ✅ **Agent间通信**：支持 agent-to-agent 消息传递
-- ✅ **统一管理**：单Gateway进程，便于管理和监控
-
----
-
-## OpenClaw 多Agent 核心概念
-
-- **agentId**：一个"大脑"（独立的workspace、auth、session store）
-- **workspace**：Agent的工作目录（AGENTS.md/SOUL.md/USER.md等）
-- **agentDir**：Agent的状态目录（auth profiles、model registry等）
-- **binding**：路由规则，将入站消息匹配到 agentId
+- ✅ **强隔离**：4独立OpenClaw进程，互不干扰
+- ✅ **端口间隔**：每个实例端口间隔20+（8080, 8100, 8120, 8140）
+- ✅ **细分工**：每实例多Agent专业协作
+- ✅ **安全控制**：微信号仅在assistant登录
+- ✅ **独立配置**：独立STATE、CONFIG、端口
 
 ---
 
@@ -121,7 +150,7 @@ https://github.com/imoneyha/mul_agent
 
 ## 后续步骤
 
-配置审核通过后，可进行：
-1. 实际启动测试
-2. 根据需要调整各Agent的 SOUL.md 和 AGENTS.md
-3. 配置各Agent的工具权限和沙箱策略
+README审核通过后，可进行：
+1. 实际启动各实例测试
+2. 根据需要调整各Agent的工具权限
+3. 配置实例间通信机制

@@ -1,6 +1,6 @@
 {
   "name": "mul-agent-creative",
-  "port": 8082,
+  "port": 8120,
   "model": "npi/gpt-5.3-codex",
   
   "channels": {
@@ -14,45 +14,15 @@
     "novelist": {
       "model": "npi/gpt-5.3-codex",
       "tools": ["read", "write", "edit", "web_search"],
-      "permissions": {
-        "external": false,
-        "code": false
-      },
       "workdir": "~/novels"
     },
     "copywriter": {
       "model": "npi/gpt-5.3-codex",
-      "tools": ["read", "write", "edit", "web_search"],
-      "permissions": {
-        "external": false,
-        "code": false
-      }
+      "tools": ["read", "write", "edit", "web_search"]
     },
     "planner": {
       "model": "npi/gpt-5.3-codex",
-      "tools": ["read", "write", "edit"],
-      "permissions": {
-        "external": false,
-        "code": false
-      }
+      "tools": ["read", "write", "edit"]
     }
-  },
-  
-  "bindings": {
-    "api": {
-      "default": "novelist",
-      "rules": [
-        {
-          "match": ".*文案.*|.*广告.*|.*推广.*",
-          "agent": "copywriter"
-        },
-        {
-          "match": ".*大纲.*|.*规划.*|.*设定.*|.*世界观.*",
-          "agent": "planner"
-        }
-      ]
-    }
-  },
-  
-  "report_to": "http://localhost:8080"
+  }
 }
