@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.23-2"
+  },
+  "models": {
+    "providers": {
+      "npi": {
+        "baseUrl": "http://127.0.0.1:3000/v1",
+        "apiKey": "sk-bmBR9rZFYhU5xkBnsei96pRQEOTAS3nWNPBjBNAjZEjiawfe",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-5.3-codex",
+            "name": "gpt-5.3-codex"
+          },
+          {
+            "id": "doubao-seed-2.0-code",
+            "name": "doubao-seed-2.0-code"
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "npi/gpt-5.3-codex",
+        "fallbacks": [
+          "npi/doubao-seed-2.0-code"
+        ]
+      },
+      "workspace": "~/mul-agent/security/workspace"
+    }
+  },
+  "tools": {
+    "profile": "coding",
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "duckduckgo"
+      }
+    }
+  },
+  "channels": {},
+  "gateway": {
+    "port": 18800,
+    "mode": "local",
+    "bind": "loopback"
+  },
+  "plugins": {
+    "slots": {
+      "memory": "openclaw-mem0"
+    },
+    "entries": {
+      "openclaw-mem0": {
+        "enabled": true
+      }
+    }
+  }
+}
