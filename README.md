@@ -13,6 +13,39 @@
 
 ---
 
+## 文档版本与统一口径
+- 文档版本：`v2026.03.27`
+- 最后同步：`2026-03-27 22:40 CST`
+- 口径状态：`已与 docs/architecture.md、docs/role-mapping.md、scripts/deploy.sh 对齐`
+
+### 单一事实来源（Single Source of Truth）
+为避免多版本文档冲突，约定如下：
+1. **实例定义与端口**：以本 README 的「架构与端口规划」为准。
+2. **职责映射**：以 `docs/role-mapping.md` 为准。
+3. **部署与生成逻辑**：以 `scripts/deploy.sh` 为准。
+4. **历史口径（如 8080~8083 / ~/mul-agent/<instance>/config.json）**：视为废弃，不再使用。
+
+---
+
+## 口径变更日志（Changelog）
+- **2026-03-27 22:42 CST**
+  - 新增本节用于记录口径变更，确保后续可追溯。
+- **2026-03-27 22:40 CST**
+  - 对齐四实例统一定义：assistant/security/creative/devops。
+  - 统一端口：`18780/18800/18820/18840`。
+  - 统一配置路径：`~/.openclaw-<profile>/openclaw.json`。
+  - 统一工作区路径：`~/.openclaw/workspace-<profile>`。
+  - 明确旧口径 `8080~8083` 与 `~/mul-agent/<instance>/config.json` 废弃。
+
+---
+
+## 机器人命名与运行要求（Owner 口径）
+- assistant：**白泽**（智能助手入口）
+- security：**武安侯**（安防救援）
+- creative：**藏书阁**（内容文创）
+- devops：**赛博道长**（系统研发）
+统一要求：每实例为独立机器人；每实例可配 1 名助理 + 多个下属 agent；下属 7x24 待命、全年无休、无需重新唤醒，token 按需保障。
+---
 ## 架构与端口规划（间隔 20+）
 
 | Profile | Gateway端口 | 配置目录 | 工作区目录 | 角色 |
@@ -152,20 +185,22 @@ mul_agent/
 - GitHub: https://github.com/imoneyha/mul_agent
 - 开发分支: `new`
 ---
-## 自动监测（已启用）
-已按你的要求启用自动巡检与自动执行下一轮：
+## 自动监测（默认关闭，改由武安侯职责）
+按当前口径，自动巡检默认关闭，巡检职责归属 security 实例（武安侯）：
 - 脚本：`scripts/auto_monitor.sh`
 - 定时安装脚本：`scripts/install_auto_monitor_cron.sh`
-- 当前计划任务：每 30 分钟执行一次
+- 当前计划任务：不自动安装（需人工明确启用）
 ```bash
 */30 * cd /home/baiyun/project/mul_agent && ./scripts/auto_monitor.sh >> /home/baiyun/project/mul_agent/logs/cron.log 2>&1
 ```
+> 默认不建议安装 cron；由武安侯按职责进行监督巡检与阻塞处理。
+
 ### 自动巡检内容
 1. 执行 `./scripts/deploy.sh`
 2. 执行 4 个 profile 的 `openclaw --profile <name> config validate`
 3. 生成报告：`docs/AUTO_CHECK_REPORT.md`
 4. 有报告变更时自动 git 提交并推送
-### 手动触发一次
+### 手动触发（仅在需要时）
 ```bash
 cd ~/project/mul_agent
 ./scripts/auto_monitor.sh

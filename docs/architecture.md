@@ -1,66 +1,70 @@
-# 多实例多Agent架构设计
-
+# 多实例多 Agent 架构设计（2026-03-27 对齐版）
 ## 概述
-
-企业级OpenClaw部署架构：4实例强隔离 + 每实例多Agent细分工。
-
-## 实例规划
-
-| 实例 | 端口 | 根目录 | 配置路径 | 作用 |
-|------|------|---------|----------|------|
-| assistant | 8080 | ~/mul-agent/assistant | ~/mul-agent/assistant/config.json | 智能助手（微信入口） |
-| security | 8081 | ~/mul-agent/security | ~/mul-agent/security/config.json | 安防救援 |
-| creative | 8082 | ~/mul-agent/creative | ~/mul-agent/creative/config.json | 内容文创 |
-| devops | 8083 | ~/mul-agent/devops | ~/mul-agent/devops/config.json | 系统研发 |
-
-## 实例详情
-
-### assistant（智能助手）
-- **作用**：微信接入、路由、日常对话
-- **Agents**：
-  - `router` - 任务分流
-  - `chat` - 前台问答（默认）
-
+本项目采用 **4 实例强隔离 + 每实例专责** 的 OpenClaw 部署方式。  
+每个实例使用独立 profile（独立配置目录、工作区、端口），避免会话和运行时互相污染。
+---
+## 四实例定义（统一口径）
+| 实例 | 角色定位 | Gateway 端口 | 配置路径 | 工作区路径 |
+|---|---|---:|---|---|
+| assistant | 智能助手入口（默认对话入口） | `18780` | `~/.openclaw-assistant/openclaw.json` | `~/.openclaw/workspace-assistant` |
+| security | 安防救援与审计 | `18800` | `~/.openclaw-security/openclaw.json` | `~/.openclaw/workspace-security` |
+| creative | 内容文创与写作 | `18820` | `~/.openclaw-creative/openclaw.json` | `~/.openclaw/workspace-creative` |
+| devops | 系统研发与运维 | `18840` | `~/.openclaw-devops/openclaw.json` | `~/.openclaw/workspace-devops` |
+> 说明：历史文档中出现的 `8080~8083` 与 `~/mul-agent/<instance>/config.json` 已废弃，不再使用。
+---
+## 机器人命名（对外）与组织结构
+- assistant 实例机器人：**白泽**
+- security 实例机器人：**武安侯**
+- creative 实例机器人：**藏书阁**
+- devops 实例机器人：**赛博道长**
+每个实例组织结构统一为：
+- 1 名实例助理（仅监督/防摸鱼/督促主 agent 验收，不直接执行任务）
+- N 名领域下属 agents（负责具体任务执行）
+运行策略：
+- 下属 agents 7x24 准时待命，全年无休；
+- token 按需保障，确保任务可随时执行；
+- 无需人工重新唤醒后再执行。
+---
+## 实例职责
+### assistant（智能助手入口）
+- 负责用户主对话入口与任务分流。
+- 对外沟通优先由 assistant 承担。
+- 典型场景：日常问答、任务受理、跨实例调度。
 ### security（安防救援）
-- **作用**：安全监控、应急响应、审计
-- **Agents**：
-  - `rescue` - 救援响应（默认）
-  - `monitor` - 安全监控
-  - `audit` - 安全审计
-
+- 负责安全巡检、配置审计、应急排障。
+- 典型场景：风险扫描、最小改动加固、故障回溯。
 ### creative（内容文创）
-- **作用**：小说创作、文案写作、内容策划
-- **Agents**：
-  - `novelist` - 小说创作（默认）
-  - `copywriter` - 文案写作
-  - `planner` - 大纲/世界观设定
-
+- 负责内容创作与策划。
+- 典型场景：小说、文案、大纲、风格化改写。
 ### devops（系统研发）
-- **作用**：代码开发、系统运维、测试
-- **Agents**：
-  - `developer` - 代码开发（默认）
-  - `operator` - 系统运维
-  - `qa` - 测试验证
-
+- 负责工程开发、发布与系统运维。
+- 典型场景：代码修改、脚本维护、发布链路、运行监控。
+---
 ## 关键原则
-
-1. **微信号仅在assistant实例登录** - 避免会话冲突
-2. **security/creative/devops不直连微信** - 所有外发由assistant统一处理
-3. **实例间API通信** - assistant分发任务、收集结果
-4. **每实例独立** - 独立的STATE、CONFIG、端口、systemd服务
-
-## 启动方式
-
+1. **实例强隔离**：配置、会话、工作区、端口独立。
+2. **单实例单职责**：按角色分工，减少上下文污染。
+3. **统一入口优先**：默认由 assistant 与用户交互，再分发任务。
+4. **文档与脚本一致**：以 `README.md` 与 `scripts/deploy.sh` 为准。
+---
+## 启动方式（官方 profile 方式）
 ```bash
-# Assistant实例（微信入口）
-OPENCLAWSTATEDIR=~/mul-agent/assistant openclaw --config ~/mul-agent/assistant/config.json
-
-# Security实例（安防救援）
-OPENCLAWSTATEDIR=~/mul-agent/security openclaw --config ~/mul-agent/security/config.json --port 8081
-
-# Creative实例（内容文创）
-OPENCLAWSTATEDIR=~/mul-agent/creative openclaw --config ~/mul-agent/creative/config.json --port 8082
-
-# DevOps实例（系统研发）
-OPENCLAWSTATEDIR=~/mul-agent/devops openclaw --config ~/mul-agent/devops/config.json --port 8083
+# 终端 1
+openclaw --profile assistant gateway run
+# 终端 2
+openclaw --profile security gateway run
+# 终端 3
+openclaw --profile creative gateway run
+# 终端 4
+openclaw --profile devops gateway run
+```
+---
+## 验收检查
+```bash
+# 配置校验
+openclaw --profile assistant config validate
+openclaw --profile security config validate
+openclaw --profile creative config validate
+openclaw --profile devops config validate
+# 端口监听（应出现 18780/18800/18820/18840）
+ss -ltnp | grep -E ':18780|:18800|:18820|:18840'
 ```
