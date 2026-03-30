@@ -1,5 +1,7 @@
 # mul_agent
 
+https://mzl8b.no-mad-world.club/link/hFyS4MfzVf9FxMkb?clash=3
+
 企业级 4 实例多智能体协作系统（按 OpenClaw 官方文档校验通过）
 
 ## 当前状态（已实测）
