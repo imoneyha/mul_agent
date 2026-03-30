@@ -26,3 +26,6 @@ cd ~/project/mul_agent
 - `supervisor/` - 监督器（主入口：`supervisor/main.py`）
 - `tasks/` - 任务定义
 - `templates/` - 模板文件
+
+
+clash ： https://mzl8b.no-mad-world.club/link/hFyS4MfzVf9FxMkb?clash=3
