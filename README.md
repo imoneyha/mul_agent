@@ -27,5 +27,3 @@ cd ~/project/mul_agent
 - `tasks/` - 任务定义
 - `templates/` - 模板文件
 
-
-clash ： https://mzl8b.no-mad-world.club/link/hFyS4MfzVf9FxMkb?clash=3
